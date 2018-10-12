@@ -29,10 +29,13 @@
    </div>
 
   <div class="extra-container">
-    <label for="">
-      <input type="checkbox"> Check All
+    <label>
+      <input type="checkbox" :checked="!anyRemaining" @change="checkAllTodo"> Check All
     </label>
+      <div>{{ remaining }} item left</div>
   </div> 
+
+
 
   </div>
 </template>
@@ -75,6 +78,14 @@ export default {
       }
     }
   },
+  computed: {
+    remaining() {
+      return this.todos.filter(todo => !todo.completed).length
+    },
+    anyRemaining() {
+      return this.remaining != 0
+    }
+  },
   methods: {
     addTodoList() {
       //if it has an empty string
@@ -103,7 +114,7 @@ export default {
     },
 
     doneEdit(todo){
-      if(todo.title.trim() == '') {
+      if(todo.title.trim() === '') {
         todo.title = this.beforeEditCache
       }
       todo.edited = false
@@ -112,6 +123,10 @@ export default {
     cancelEdit(todo){
       todo.title = this.beforeEditCache
       todo.edited = false
+    },
+
+    checkAllTodo() {
+      this.todos.filter(todo => todo.completed = event.target.checked )
     }
 
   }
