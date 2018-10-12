@@ -4,26 +4,35 @@
 
    <div v-for="(todo, index) in todos" :key="todo.id" class="todo-item">
 
-      <div v-if="!todo.edited" @dblclick="editTodo(todo)">
-        {{todo.title}}
-      </div>
-      
-      <input v-else type="text" 
-      v-model="todo.title" 
-      @blur="doneEdit(todo)" 
-      @keyup.enter="doneEdit(todo)" 
-      @keyup.esc="cancelEdit(todo)"
-      class="todo-input">
+    <div class="todo-item">
+      <input type="checkbox" v-model="todo.completed">
 
-      <div v-if="todo.edited == true" class="escEdit">
-        <p><i>[ <b> esc </b> to cancel ]</i></p> 
-      </div>
+        <div v-if="!todo.edited" @dblclick="editTodo(todo)" :class="{ completed: todo.completed }">
+          {{todo.title}}
+        </div>
+        
+        <input v-else type="text" 
+        v-model="todo.title" 
+        @blur="doneEdit(todo)" 
+        @keyup.enter="doneEdit(todo)" 
+        @keyup.esc="cancelEdit(todo)"
+        class="todo-input-item" v-focus>
+
+        <div v-if="todo.edited == true" class="escEdit">
+          <p><i>[ <b> esc </b> to cancel edit ]</i></p> 
+        </div>
       
+    </div>
       <div @click="removeTodo(index)" class="remove-item">
         &times;
       </div>
-
    </div>
+
+  <div class="extra-container">
+    <label for="">
+      <input type="checkbox"> Check All
+    </label>
+  </div> 
 
   </div>
 </template>
@@ -35,6 +44,7 @@ export default {
     return {
       newTodoList: "",
       beforeEditCache:"",
+      completed: false,
       idTodoList: 4,
       todos: [
         {
@@ -118,15 +128,22 @@ export default {
 }
 
 .todo-item {
+
   margin-bottom: 12px;
   display: flex;
   align:center;
   justify-content: space-between;
 }
 
+.todo-input-item {
+  padding: 10px 10px;
+  font-size: 15px;
+}
+
 .remove-item {
   font-size:25px;
   cursor: pointer;
+  margin-top: -8px;
   margin-left: 14px;
   &:hover{
     color: black;
@@ -137,9 +154,23 @@ export default {
   font-size: 12px;
   color:grey;
   // display: flex;
-  margin: 5px 10px 10px 40px;
+  margin: 0 5px 0 20px;
   // padding: 0 10px 0 10px;
  
+}
+
+.extra-container {
+  display: flex;
+  align-items: center;
+  justify-content:space-between;
+  font-size: 16px;
+  border-top: 1px solid lightgreen;
+  padding-top: 14px;
+  margin-bottom: 14px;
+}
+
+.todo-item-edit .focus {
+    outline: none;
 }
 
 .completed {
