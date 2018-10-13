@@ -2,31 +2,8 @@
   <div>
    <input type="text" v-model="newTodoList" @keyup.enter="addTodoList" class="todo-input" placeholder="What's your plan?">
 
-   <div v-for="(todo, index) in todos" :key="todo.id" class="todo-item">
-
-    <div class="todo-item">
-      <input type="checkbox" v-model="todo.completed">
-
-        <div v-if="!todo.edited" @dblclick="editTodo(todo)" :class="{ completed: todo.completed }">
-          {{todo.title}}
-        </div>
-        
-        <input v-else type="text" 
-        v-model="todo.title" 
-        @blur="doneEdit(todo)" 
-        @keyup.enter="doneEdit(todo)" 
-        @keyup.esc="cancelEdit(todo)"
-        class="todo-input-item" v-focus>
-
-        <div v-if="todo.edited == true" class="escEdit">
-          <p><i>[ <b> esc </b> to cancel edit ]</i></p> 
-        </div>
-      
-    </div>
-      <div @click="removeTodo(index)" class="remove-item">
-        &times;
-      </div>
-   </div>
+   <todo-item v-for="(todo, index) in todosFiltered" :todo="todo" :key="index" @removeTodo="removeTodo">
+   </todo-item>
 
   <div class="extra-container">
     <label>
@@ -34,20 +11,31 @@
     </label>
       <div>{{ remaining }} item left</div>
   </div> 
-
-
+  <div class="extra-container">
+    <div>
+      <button :class="{ active: filter == 'all' }" @click="filter = 'all'">All</button>
+      <button :class="{ active: filter == 'active' }" @click="filter = 'active'">Active</button>
+      <button :class="{ active: filter == 'completed' }" @click="filter = 'completed'">Completed</button>            
+    </div>
+  </div>
 
   </div>
 </template>
 
 <script>
+import TodoItem from './TodoItem';
+
 export default {
   name: "todo-list",
+  components: {
+    TodoItem
+  },
   data() {
     return {
       newTodoList: "",
       beforeEditCache:"",
       completed: false,
+      filter: 'all',
       idTodoList: 4,
       todos: [
         {
@@ -83,13 +71,24 @@ export default {
       return this.todos.filter(todo => !todo.completed).length
     },
     anyRemaining() {
-      return this.remaining != 0
+      return this.remaining !== 0
+    },
+    todosFiltered() {
+      if(this.filter === 'all') {
+        return this.todos
+      }else if (this.filter === 'active') {
+        return this.todos.filter(todo => !todo.completed)
+      }else if (this.filter === 'completed') {
+        return this.todos.filter(todo => todo.completed)
+      }
+
+      return this.todos
     }
   },
   methods: {
     addTodoList() {
       //if it has an empty string
-      if (this.newTodoList.length == 0) {
+      if (this.newTodoList.length === 0) {
         return;
       }
 
@@ -143,7 +142,6 @@ export default {
 }
 
 .todo-item {
-
   margin-bottom: 12px;
   display: flex;
   align:center;
@@ -156,9 +154,8 @@ export default {
 }
 
 .remove-item {
-  font-size:25px;
+  font-size: 25px;
   cursor: pointer;
-  margin-top: -8px;
   margin-left: 14px;
   &:hover{
     color: black;
@@ -188,9 +185,17 @@ export default {
     outline: none;
 }
 
+.todo-item-left {
+  display: flex;
+  align-items: center;
+}
+
 .completed {
   text-decoration: line-through;
   color: grey;
 }
 
+.active {
+  background-color: lightgreen;
+}
 </style>

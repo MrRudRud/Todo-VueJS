@@ -8,7 +8,8 @@
 
 <script>
 import HelloWorld from "./components/HelloWorld";
-import TodoList from "./components/TodoList"
+import TodoList from "./components/TodoList";
+
 export default {
   name: "App",
   components: {
