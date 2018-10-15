@@ -2,7 +2,14 @@
   <div>
    <input type="text" v-model="newTodoList" @keyup.enter="addTodoList" class="todo-input" placeholder="What's your plan?">
 
-   <todo-item v-for="(todo, index) in todosFiltered" :todo="todo" :key="index" @removeTodo="removeTodo">
+   <todo-item v-for="(todo, index) in todosFiltered" 
+    :key="todo.id"
+    :todo="todo" 
+    :index="index" 
+    @removeTodo="removeTodo"
+    @finishedEdit="finishedEdit"
+    :checkAll="!anyRemaining"
+    >
    </todo-item>
 
   <div class="extra-container">
@@ -59,13 +66,7 @@ export default {
       ]
     };
   },
-  directives: {
-    focus: {
-      inserted: function(el) {
-        el.focus()
-      }
-    }
-  },
+
   computed: {
     remaining() {
       return this.todos.filter(todo => !todo.completed).length
@@ -107,12 +108,12 @@ export default {
       this.todos.splice(index, 1)
     },
 
-    editTodo(todo) {
+    editTodo() {
       this.beforeEditCache = todo.title
       todo.edited = true
     },
 
-    doneEdit(todo){
+    doneEdit(){
       if(todo.title.trim() === '') {
         todo.title = this.beforeEditCache
       }
@@ -126,6 +127,10 @@ export default {
 
     checkAllTodo() {
       this.todos.filter(todo => todo.completed = event.target.checked )
+    },
+
+    finishedEdit(data) {
+      this.todos.splice(data.index, 1, data.todo)
     }
 
   }
