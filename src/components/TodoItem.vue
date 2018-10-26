@@ -19,7 +19,7 @@
             <p><i>[ <b> esc </b> to cancel edit ]</i></p> 
           </div>
         
-        <div @click="removeTodo(index)" class="remove-item">
+        <div @click="removeTodo(id)" class="remove-item">
           &times;
         </div>        
       </div>
@@ -59,28 +59,26 @@ export default {
     }
   },
   methods: {
-    removeTodo(index){
-      this.$emit('removeTodo', index)
+    removeTodo(id){
+      this.$store.commit('removeTodo', id)
     },
+    
     editTodo() {
       this.beforeEditCache = this.title
       this.edited = true
     },
 
     doneEdit(){
-      if(this.title.trim() === '') {
+      if(this.title.trim() == '') {
         this.title = this.beforeEditCache
       }
       this.edited = false
 
-      this.$emit('finishedEdit', {
-        index: this.index,
-        todo: {
+      this.$store.commit('finishedEdit', {
           id: this.id,
           title: this.title,
           completed: this.completed,
           edited: this.edited
-        }
       });      
 
     },
@@ -88,7 +86,8 @@ export default {
     cancelEdit(){
       this.title = this.beforeEditCache
       this.edited = false
-    },    
+    },
+    
   },
   directives: {
     focus: {
